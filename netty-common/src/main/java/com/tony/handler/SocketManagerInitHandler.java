@@ -36,6 +36,7 @@ public class SocketManagerInitHandler extends ChannelInboundHandlerAdapter {
 
     /**
      * 新建连接
+     *
      * @param ctx
      * @throws Exception
      */
@@ -48,6 +49,7 @@ public class SocketManagerInitHandler extends ChannelInboundHandlerAdapter {
 
     /**
      * 连接停止，解除连接
+     *
      * @param ctx
      * @throws Exception
      */
@@ -61,7 +63,7 @@ public class SocketManagerInitHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-        if(IdleStateEvent.class.isAssignableFrom(evt.getClass())) {
+        if (IdleStateEvent.class.isAssignableFrom(evt.getClass())) {
             IdleStateEvent event = (IdleStateEvent) evt;
             if (event.state() == IdleState.READER_IDLE) {
                 ctx.writeAndFlush(heartCmd);

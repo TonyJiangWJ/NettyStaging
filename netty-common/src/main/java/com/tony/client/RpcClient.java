@@ -1,5 +1,6 @@
 package com.tony.client;
 
+import com.tony.RpcException;
 import com.tony.constants.EnumResponseState;
 import com.tony.message.MessageDto;
 import com.tony.message.RpcCmd;
@@ -32,8 +33,9 @@ public interface RpcClient {
      *
      * @param rpcCmd
      * @return 请求结果
+     * @throws RpcException
      */
-    MessageDto request(RpcCmd rpcCmd);
+    MessageDto request(RpcCmd rpcCmd) throws RpcException;
 
     /**
      * 发送请求，返回请求结果
@@ -41,8 +43,9 @@ public interface RpcClient {
      * @param rpcCmd
      * @param timeout
      * @return
+     * @throws RpcException
      */
-    MessageDto request(RpcCmd rpcCmd, long timeout);
+    MessageDto request(RpcCmd rpcCmd, long timeout) throws RpcException;
 
     /**
      * 发送请求，返回请求结果
@@ -50,8 +53,9 @@ public interface RpcClient {
      * @param remoteKey
      * @param messageDto
      * @return
+     * @throws RpcException
      */
-    MessageDto request(String remoteKey, MessageDto messageDto);
+    MessageDto request(String remoteKey, MessageDto messageDto) throws RpcException;
 
     /**
      * 发送请求，返回请求结果
@@ -60,8 +64,9 @@ public interface RpcClient {
      * @param messageDto
      * @param timeout
      * @return
+     * @throws RpcException
      */
-    MessageDto request(String remoteKey, MessageDto messageDto, long timeout);
+    MessageDto request(String remoteKey, MessageDto messageDto, long timeout) throws RpcException;
 
     /**
      * 获取所有的远程连接key

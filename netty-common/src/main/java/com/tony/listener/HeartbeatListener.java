@@ -9,6 +9,7 @@ public interface HeartbeatListener {
 
     /**
      * 客户端收到心跳请求处理
+     *
      * @param rpcCmd
      */
     default void onClientReceiveHeart(RpcCmd rpcCmd) {
@@ -17,6 +18,7 @@ public interface HeartbeatListener {
 
     /**
      * 服务端收到心跳请求处理
+     *
      * @param rpcCmd
      */
     default void onServerReceiveHeart(RpcCmd rpcCmd) {

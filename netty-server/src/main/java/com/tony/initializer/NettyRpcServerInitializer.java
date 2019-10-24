@@ -1,6 +1,6 @@
 package com.tony.initializer;
 
-import com.tony.config.ServerProperty;
+import com.tony.config.ServerInfo;
 import com.tony.constants.EnumNettyType;
 import com.tony.message.NettyContext;
 import io.netty.bootstrap.ServerBootstrap;
@@ -33,7 +33,7 @@ public class NettyRpcServerInitializer implements RpcServerInitializer {
     private NioEventLoopGroup bossGroup;
 
     @Override
-    public void init(ServerProperty serverProperty) {
+    public void init(ServerInfo serverInfo) {
         NettyContext.getInstance().setNettyType(EnumNettyType.server);
         bossGroup = new NioEventLoopGroup();
         workerGroup = new NioEventLoopGroup();
@@ -44,12 +44,12 @@ public class NettyRpcServerInitializer implements RpcServerInitializer {
                     .option(ChannelOption.SO_BACKLOG, 100)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(nettyServerChannelInitializer);
-            if (StringUtils.hasText(serverProperty.getListenHost())) {
-                serverBootstrap.bind(serverProperty.getListenHost(), serverProperty.getListenPort());
+            if (StringUtils.hasText(serverInfo.getHost())) {
+                serverBootstrap.bind(serverInfo.getHost(), serverInfo.getPort());
             } else {
-                serverBootstrap.bind(serverProperty.getListenPort());
+                serverBootstrap.bind(serverInfo.getPort());
             }
-            log.info("server listen on [{}:{}]", StringUtils.hasText(serverProperty.getListenHost()) ? serverProperty.getListenHost() : "0.0.0.0", serverProperty.getListenPort());
+            log.info("server listen on [{}:{}]", StringUtils.hasText(serverInfo.getHost()) ? serverInfo.getHost() : "0.0.0.0", serverInfo.getPort());
         } catch (Exception e) {
             log.error("server start error:", e);
         }

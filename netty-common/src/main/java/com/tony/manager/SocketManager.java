@@ -1,5 +1,6 @@
 package com.tony.manager;
 
+import com.tony.RpcException;
 import com.tony.constants.EnumResponseState;
 import com.tony.message.MessageDto;
 import com.tony.message.RpcCmd;
@@ -60,7 +61,15 @@ public class SocketManager {
         return future.isSuccess() ? EnumResponseState.success : EnumResponseState.fail;
     }
 
-    public MessageDto request(String addressKey, RpcCmd rpcCmd, long timeout) {
+    /**
+     * 向目标地址发送请求，并等待请求结果
+     *
+     * @param addressKey 目标地址
+     * @param rpcCmd     发送内容
+     * @param timeout    等待时间 单位秒
+     * @return
+     */
+    public MessageDto request(String addressKey, RpcCmd rpcCmd, long timeout) throws RpcException {
         Channel channel = getChannel(addressKey);
         channel.writeAndFlush(rpcCmd);
         log.debug("await response");
@@ -75,7 +84,7 @@ public class SocketManager {
         return res;
     }
 
-    public MessageDto request(String addressKey, RpcCmd rpcCmd) {
+    public MessageDto request(String addressKey, RpcCmd rpcCmd) throws RpcException {
         return request(addressKey, rpcCmd, -1);
     }
 

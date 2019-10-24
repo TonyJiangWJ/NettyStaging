@@ -42,6 +42,7 @@ public class RpcCmdDecoder extends MessageToMessageDecoder<RpcCmd> {
             ctx.fireChannelRead(msg);
         } else {
             // 根据随机key 获取消息持有对象
+            // 随机key对应的对象保存在本地缓存中，如果不存在则说明该key不是本地的，也就是该消息不是request返回的，反之则是request返回的消息，触发signal
             RpcContent content = msg.loadRpcContent();
             if (content != null) {
                 log.debug("decode中获取到消息内容：「{}」", JSON.toJSONString(msg.getMessage()));
@@ -51,6 +52,7 @@ public class RpcCmdDecoder extends MessageToMessageDecoder<RpcCmd> {
                 log.debug("decode中发送signal");
                 content.signal();
             } else {
+                // 非request返回的消息，触发下一个handler
                 ctx.fireChannelRead(msg);
             }
         }

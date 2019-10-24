@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-public class ClientHeartbeatListen implements HeartbeatListener {
+public class ClientHeartbeatListener implements HeartbeatListener {
     @Override
     public void onClientReceiveHeart(RpcCmd rpcCmd) {
         log.info("客户端收到来自【{}】心跳请求，返回心跳信息", rpcCmd.getRemoteAddressKey());

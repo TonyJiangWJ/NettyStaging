@@ -1,5 +1,6 @@
 package com.tony.initializer.channel;
 
+import com.tony.config.ServerInfo;
 import com.tony.handler.ClientRetryHandler;
 import com.tony.handler.ObjectSerializerDecoder;
 import com.tony.handler.ObjectSerializerEncoder;
@@ -31,10 +32,12 @@ public class NettyClientChannelInitializer extends ChannelInitializer<Channel> {
     private ClientRetryHandler clientRetryHandler;
     @Autowired
     private SocketManagerInitHandler socketManagerInitHandler;
+    @Autowired
+    private ServerInfo serverInfo;
 
     @Override
     protected void initChannel(Channel ch) throws Exception {
-        long idleTime = 5000;
+        long idleTime = serverInfo.getCheckTime();
         ch.pipeline()
                 // 定长解码 解决粘包和半包问题
                 .addLast(new LengthFieldPrepender(4, false))

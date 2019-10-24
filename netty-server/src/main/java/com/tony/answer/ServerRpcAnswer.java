@@ -39,7 +39,7 @@ public class ServerRpcAnswer implements RpcAnswer, DisposableBean {
         executorService.submit(() -> {
             String data = rpcCmd.getMessage().dataOfClazz(String.class);
             int state = rpcCmd.getMessage().getState();
-            if (EnumNettyState.REQUEST.getState()==state) {
+            if (EnumNettyState.REQUEST.getState() == state) {
                 log.info("服务端收到客户端请求：「{}」", rpcCmd.getMessage());
                 String action = rpcCmd.getMessage().getAction();
                 // 执行业务操作，更新message
@@ -57,6 +57,7 @@ public class ServerRpcAnswer implements RpcAnswer, DisposableBean {
                     message.setData("服务端执行请求成功, for:" + data.substring(13));
                     message.setState(EnumNettyState.RESPONSE_OK.getState());
                     rpcCmd.setMessage(message);
+                    log.info("服务端执行完毕，发送反馈消息：「{}」", message);
                     rpcClient.send(rpcCmd);
                 }
             } else {

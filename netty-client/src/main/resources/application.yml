@@ -1,0 +1,10 @@
+netty:
+  server:
+    host: 127.0.0.1
+    port: 1234
+    checkTime: 10000
+
+logging:
+  file: log/client.log
+  level:
+    com.tony: debug

@@ -1,5 +1,6 @@
 package com.tony.initializer;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.tony.config.ServerInfo;
 import com.tony.constants.EnumNettyType;
 import com.tony.manager.SocketManager;
@@ -20,6 +21,8 @@ import java.net.SocketAddress;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -36,9 +39,14 @@ public class NettyRpcClientInitializer implements RpcClientInitializer {
 
     private EventLoopGroup workerGroup;
 
+    private ScheduledExecutorService scheduledExecutor;
+
     @Override
     public void init(ServerInfo serverInfo, boolean sync) {
         NettyContext.getInstance().setNettyType(EnumNettyType.client);
+        scheduledExecutor = new ScheduledThreadPoolExecutor(4,
+                new ThreadFactoryBuilder().setNameFormat("client-sc-%d").build()
+        );
         workerGroup = new NioEventLoopGroup();
         // 当前设置仅仅连接一个服务端
         Optional<Future> future = connect(new InetSocketAddress(serverInfo.getHost(), serverInfo.getPort()));
@@ -80,7 +88,9 @@ public class NettyRpcClientInitializer implements RpcClientInitializer {
                 return Optional.empty();
             }
         }
-        log.error("connect socket[{}] failed", socketAddress);
+        log.error("connect socket[{}] failed, retry in 60 seconds", socketAddress);
+        // 连接失败 设置一分钟后重连
+        scheduledExecutor.schedule(()->connect(socketAddress), 60, TimeUnit.SECONDS);
         return Optional.empty();
     }
 

@@ -1,5 +1,6 @@
 package com.tony.client.impl;
 
+import com.tony.RpcException;
 import com.tony.client.RpcClient;
 import com.tony.constants.EnumResponseState;
 import com.tony.manager.SocketManager;
@@ -31,22 +32,22 @@ public class NettyRpcClient implements RpcClient {
     }
 
     @Override
-    public MessageDto request(RpcCmd rpcCmd) {
+    public MessageDto request(RpcCmd rpcCmd) throws RpcException {
         return request0(rpcCmd, -1);
     }
 
     @Override
-    public MessageDto request(RpcCmd rpcCmd, long timeout) {
+    public MessageDto request(RpcCmd rpcCmd, long timeout) throws RpcException {
         return request0(rpcCmd, timeout);
     }
 
     @Override
-    public MessageDto request(String remoteKey, MessageDto messageDto) {
+    public MessageDto request(String remoteKey, MessageDto messageDto) throws RpcException {
         return request(remoteKey, messageDto, -1);
     }
 
     @Override
-    public MessageDto request(String remoteKey, MessageDto messageDto, long timeout) {
+    public MessageDto request(String remoteKey, MessageDto messageDto, long timeout) throws RpcException {
         RpcCmd rpcCmd = new RpcCmd();
         rpcCmd.setRemoteAddressKey(remoteKey);
         rpcCmd.setMessage(messageDto);
@@ -54,7 +55,7 @@ public class NettyRpcClient implements RpcClient {
         return request0(rpcCmd, timeout);
     }
 
-    private MessageDto request0(RpcCmd rpcCmd, long timeout) {
+    private MessageDto request0(RpcCmd rpcCmd, long timeout) throws RpcException {
         if (StringUtils.isEmpty(rpcCmd.getRandomKey())) {
             // 请求需要通过randomKey获取上下文消息持有对象，因此randomKey必传
             throw new IllegalArgumentException("random key must not be null");

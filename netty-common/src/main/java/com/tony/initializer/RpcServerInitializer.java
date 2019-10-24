@@ -1,6 +1,6 @@
 package com.tony.initializer;
 
-import com.tony.config.ServerProperty;
+import com.tony.config.ServerInfo;
 import org.springframework.beans.factory.DisposableBean;
 
 /**
@@ -10,7 +10,7 @@ public interface RpcServerInitializer extends DisposableBean {
     /**
      * 初始化服务端
      *
-     * @param serverProperty
+     * @param serverInfo
      */
-    void init(ServerProperty serverProperty);
+    void init(ServerInfo serverInfo);
 }

@@ -1,5 +1,6 @@
 package com.tony.message;
 
+import com.tony.RpcException;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,13 +25,16 @@ public class RpcCmd implements Serializable {
 
     /**
      * 创建当前消息流程的随机key和对应的消息对象
+     *
      * @return
      */
     public String randomKey() {
+        // 可以更改随机数创建方法，比如雪花算法等 避免分布式随机值相同以及提升性能
         String key = UUID.randomUUID().toString().replaceAll("-", "");
         if (RpcCmdContext.getInstance().hasKey(key)) {
             return randomKey();
         } else {
+            // 将消息持有对象放入到本地缓存
             rpcContent = RpcCmdContext.getInstance().addKey(key);
         }
         this.randomKey = key;
@@ -39,18 +43,20 @@ public class RpcCmd implements Serializable {
 
     /**
      * 获取请求结果消息传输对象
+     *
      * @return
      */
-    public MessageDto loadResult() {
+    public MessageDto loadResult() throws RpcException {
         MessageDto msg = loadRpcContent().getRes();
         if (msg == null) {
-            throw new IllegalStateException("request timeout.");
+            throw new RpcException("request timeout.");
         }
         return msg;
     }
 
     /**
      * 获取消息体，持有MessageDto
+     *
      * @return
      */
     public RpcContent loadRpcContent() {
@@ -66,7 +72,8 @@ public class RpcCmd implements Serializable {
 
     /**
      * 等待消息体释放锁
-     * @param timeout
+     *
+     * @param timeout 单位秒
      */
     public void await(long timeout) {
         if (Objects.nonNull(rpcContent.getRes())) {

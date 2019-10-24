@@ -13,4 +13,5 @@ import lombok.NoArgsConstructor;
 public class ServerInfo {
     private String host;
     private int port;
+    private long checkTime;
 }

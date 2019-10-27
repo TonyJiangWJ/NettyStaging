@@ -4,6 +4,7 @@
 - 整体思路参考自TX-LCN分布式事务框架中的netty实现
 - 消息序列化采用protostuff实现
 - 实现消息发送，消息请求并等待响应结果，自动心跳检测等
+- 可以直接以此为骨架构建长连接通信业务，扩展实现AnswerHandlerService接口和定义EnumNettyActions。具体可参考ServerAnswerHandlerServiceImpl和ClientAnswerHandlerServiceImpl，demo中实现了自动对新连接的客户端发送点对点hello消息
 
 ## 运行demo
 - clone当前仓库，进入NettyStaging文件目录

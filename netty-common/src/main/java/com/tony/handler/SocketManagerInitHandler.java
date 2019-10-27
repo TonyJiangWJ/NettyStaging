@@ -31,7 +31,7 @@ public class SocketManagerInitHandler extends ChannelInboundHandlerAdapter {
         messageDto.setAction(EnumNettyActions.HEART_CHECK.getActionKey());
         heartCmd = new RpcCmd();
         heartCmd.setMessage(messageDto);
-        heartCmd.setRandomKey(String.valueOf(System.nanoTime()));
+        heartCmd.setRandomKey(heartCmd.emptyKey());
     }
 
     /**

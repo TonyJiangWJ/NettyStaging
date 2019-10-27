@@ -90,7 +90,7 @@ public class NettyRpcClientInitializer implements RpcClientInitializer {
         }
         log.error("connect socket[{}] failed, retry in 60 seconds", socketAddress);
         // 连接失败 设置一分钟后重连
-        scheduledExecutor.schedule(()->connect(socketAddress), 60, TimeUnit.SECONDS);
+        scheduledExecutor.schedule(() -> connect(socketAddress), 60, TimeUnit.SECONDS);
         return Optional.empty();
     }
 

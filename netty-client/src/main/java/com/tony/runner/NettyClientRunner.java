@@ -1,5 +1,4 @@
 package com.tony.runner;
-import	java.util.Scanner;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -20,6 +19,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -48,7 +48,7 @@ public class NettyClientRunner implements ApplicationRunner, DisposableBean {
                 new ThreadFactoryBuilder().setNameFormat("auto-send-%d").build())
                 .submit(() -> {
                     Scanner scanner = new Scanner(System.in);
-                    while(scanner.hasNext()) {
+                    while (scanner.hasNext()) {
                         String readMessage = scanner.next();
                         RpcCmd rpcCmd = new RpcCmd();
                         rpcCmd.setRandomKey(rpcCmd.randomKey());

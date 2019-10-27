@@ -42,6 +42,15 @@ public class RpcCmd implements Serializable {
     }
 
     /**
+     * 创建随机key，但是不需要进行等待反馈值
+     *
+     * @return
+     */
+    public String emptyKey() {
+        return UUID.randomUUID().toString().replaceAll("-", "");
+    }
+
+    /**
      * 获取请求结果消息传输对象
      *
      * @return

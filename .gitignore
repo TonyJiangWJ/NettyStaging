@@ -24,6 +24,7 @@ classes/
 
 # temp ignore
 logs/
+log/
 *.log
 *.cache
 *.diff

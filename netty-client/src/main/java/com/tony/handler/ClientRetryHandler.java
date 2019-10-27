@@ -13,7 +13,6 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import java.net.ConnectException;
-import java.util.UUID;
 
 /**
  * @author jiangwenjie 2019/10/23
@@ -36,7 +35,7 @@ public class ClientRetryHandler extends ChannelInboundHandlerAdapter {
         messageDto.setAction(EnumNettyActions.HEART_CHECK.getActionKey());
         heartCmd = new RpcCmd();
         heartCmd.setMessage(messageDto);
-        heartCmd.setRandomKey(UUID.randomUUID().toString().replaceAll("-", ""));
+        heartCmd.setRandomKey(heartCmd.emptyKey());
     }
 
     @Override
@@ -48,9 +47,11 @@ public class ClientRetryHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         if (cause instanceof ConnectException) {
+            log.warn("客户端与「{}」连接断开，等待重连", ctx.channel().remoteAddress());
             Thread.sleep(15000);
             nettyRpcClientInitializer.reconnect(ctx.channel().remoteAddress());
         }
+        log.info("客户端与「{}」之间发生异常，发送心跳请求", ctx.channel().remoteAddress());
         ctx.writeAndFlush(heartCmd);
     }
 }

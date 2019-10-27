@@ -1,20 +1,20 @@
 package com.tony.listener.impl;
 
 import com.tony.listener.RpcConnectionListener;
-import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author jiangwenjie 2019/10/23
  */
-@Component
+@Slf4j
 public class DefaultRpcConnectionListener implements RpcConnectionListener {
     @Override
     public void connect(String remoteKey) {
-
+        log.info("connected to: " + remoteKey);
     }
 
     @Override
     public void disconnect(String remoteKey) {
-
+        log.info("disconnected from: " + remoteKey);
     }
 }

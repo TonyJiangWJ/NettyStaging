@@ -1,11 +1,10 @@
 netty:
   server:
-    host: 127.0.0.1
+    host: 0.0.0.0
     port: 1234
     checkTime: 10000
 
 logging:
   file: log/server.log
   level:
-    com.tony: debug
-
+    com.tony: info

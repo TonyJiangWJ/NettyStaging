@@ -1,6 +1,7 @@
 package com.tony.listener.impl;
 
 import com.tony.listener.RpcConnectionListener;
+import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -9,12 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DefaultRpcConnectionListener implements RpcConnectionListener {
     @Override
-    public void connect(String remoteKey) {
-        log.info("connected to: " + remoteKey);
+    public void connect(ChannelHandlerContext ctx) {
+        log.info("connected to: " + ctx.channel().remoteAddress().toString());
+        saveConnect(ctx);
     }
 
     @Override
-    public void disconnect(String remoteKey) {
-        log.info("disconnected from: " + remoteKey);
+    public void disconnect(ChannelHandlerContext ctx) {
+        log.info("disconnected from: " + ctx.channel().remoteAddress().toString());
     }
 }

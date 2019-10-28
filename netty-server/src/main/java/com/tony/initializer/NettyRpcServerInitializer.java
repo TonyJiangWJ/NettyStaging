@@ -42,6 +42,7 @@ public class NettyRpcServerInitializer implements RpcServerInitializer {
             serverBootstrap.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG, 100)
+                    // 生产环境上移除LoggingHandler，避免打印过多的日志
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(nettyServerChannelInitializer);
             if (StringUtils.hasText(serverInfo.getHost())) {

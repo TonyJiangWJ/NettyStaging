@@ -47,11 +47,12 @@ public class ClientRetryHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         if (cause instanceof ConnectException) {
-            log.warn("客户端与「{}」连接断开，等待重连", ctx.channel().remoteAddress());
+            log.warn("客户端与「{}」连接断开，等待重连", ctx.channel().remoteAddress(), cause);
             Thread.sleep(15000);
             nettyRpcClientInitializer.reconnect(ctx.channel().remoteAddress());
+        } else {
+            log.warn("客户端与「{}」之间发生异常，发送心跳请求", ctx.channel().remoteAddress(), cause);
+            ctx.writeAndFlush(heartCmd);
         }
-        log.info("客户端与「{}」之间发生异常，发送心跳请求", ctx.channel().remoteAddress());
-        ctx.writeAndFlush(heartCmd);
     }
 }

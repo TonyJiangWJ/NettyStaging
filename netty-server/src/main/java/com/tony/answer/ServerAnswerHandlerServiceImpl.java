@@ -71,4 +71,11 @@ public class ServerAnswerHandlerServiceImpl implements AnswerHandlerService {
             }
         }
     }
+
+    @Override
+    public void handleCmdResponse(RpcCmd rpcCmd) {
+        MessageDto message = rpcCmd.getMessage();
+        String actionKey = message.getAction();
+        log.info("服务端收到{}消息：【{}】", EnumNettyActions.getActionByKey(actionKey).getActionName(), message);
+    }
 }

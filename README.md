@@ -5,7 +5,7 @@
 - 消息序列化采用protostuff实现
 - 实现消息发送，消息请求并等待响应结果，自动心跳检测等
 - 可以直接以此为骨架构建长连接通信业务，扩展实现AnswerHandlerService接口和定义EnumNettyActions。具体可参考ServerAnswerHandlerServiceImpl和ClientAnswerHandlerServiceImpl，demo中实现了自动对新连接的客户端发送点对点hello消息
-
+- 加入了异步请求操作，以及实现模拟的认证功能，具体可以修改com.tony.listener.RpcConnectionListener.authorizeConnection
 ## 运行demo
 - clone当前仓库，进入NettyStaging文件目录
 - 在目录中执行 ```mvn clean install -Dmaven.test.skip```
@@ -13,27 +13,22 @@
 - 客户端 ```java -jar netty-client/target/netty-client-1.0-SNAPSHOT.jar```
 - 服务端运行示例
     ```log
-    2019-10-24 00:04:22.894  INFO 17433 --- [           main] c.t.i.NettyRpcServerInitializer          : server listen on [127.0.0.1:1112]
-    2019-10-24 00:04:22.907  INFO 17433 --- [ntLoopGroup-2-1] io.netty.handler.logging.LoggingHandler  : [id: 0x580eda6f] REGISTERED
-    2019-10-24 00:04:22.908  INFO 17433 --- [ntLoopGroup-2-1] io.netty.handler.logging.LoggingHandler  : [id: 0x580eda6f] BIND: /127.0.0.1:1112
-    2019-10-24 00:04:22.914  INFO 17433 --- [ntLoopGroup-2-1] io.netty.handler.logging.LoggingHandler  : [id: 0x580eda6f, L:/127.0.0.1:1112] ACTIVE
-    2019-10-24 00:04:34.454  INFO 17433 --- [ntLoopGroup-2-1] io.netty.handler.logging.LoggingHandler  : [id: 0x580eda6f, L:/127.0.0.1:1112] READ: [id: 0xde01aebf, L:/127.0.0.1:1112 - R:/127.0.0.1:55286]
-    2019-10-24 00:04:34.455  INFO 17433 --- [ntLoopGroup-2-1] io.netty.handler.logging.LoggingHandler  : [id: 0x580eda6f, L:/127.0.0.1:1112] READ COMPLETE
-    2019-10-24 00:04:46.017  INFO 17433 --- [   server-ans-0] com.tony.answer.ServerRpcAnswer          : 服务端收到客户端请求：「MessageDto(action=sm, state=100, data=Hello，now is 462760767012179)」
-    2019-10-24 00:04:47.428  INFO 17433 --- [ntLoopGroup-3-1] c.tony.listener.ServerHeartbeatListener  : 服务端收到心跳请求：「{"action":"hc","state":100}」cmdInfo:{"message":{"action":"hc","state":100},"randomKey":"462759253005553","remoteAddressKey":"/127.0.0.1:55286"}
-    2019-10-24 00:04:49.591  INFO 17433 --- [ntLoopGroup-3-1] c.tony.listener.ServerHeartbeatListener  : 服务端收到心跳请求：「{"action":"hc","state":100}」cmdInfo:{"message":{"action":"hc","state":100},"randomKey":"462759253005553","remoteAddressKey":"/127.0.0.1:55286"}
-    2019-10-24 00:04:49.592  INFO 17433 --- [ntLoopGroup-3-1] c.tony.listener.ServerHeartbeatListener  : 服务端收到心跳请求：「{"action":"hc","state":100}」cmdInfo:{"message":{"action":"hc","state":100},"randomKey":"462759253005553","remoteAddressKey":"/127.0.0.1:55286"}
-    2019-10-24 00:04:50.658  INFO 17433 --- [   server-ans-1] com.tony.answer.ServerRpcAnswer          : 服务端收到客户端请求：「MessageDto(action=sm, state=100, data=Hello，now is 462775967781819)」
-    2019-10-24 00:04:53.173  INFO 17433 --- [   server-ans-2] com.tony.answer.ServerRpcAnswer          : 服务端收到客户端请求：「MessageDto(action=sm, state=100, data=Hello，now is 462778479504322)」
+    2019-10-28 19:14:08.205  INFO 36470 --- [           main] com.tony.NettyServerApplication          : Started NettyServerApplication in 1.268 seconds (JVM running for 1.781)
+    2019-10-28 19:14:08.288  INFO 36470 --- [           main] c.t.i.NettyRpcServerInitializer          : server listen on [0.0.0.0:1234]
+    2019-10-28 19:14:08.299  INFO 36470 --- [ntLoopGroup-2-1] io.netty.handler.logging.LoggingHandler  : [id: 0x9aecb5a3] REGISTERED
+    2019-10-28 19:14:08.300  INFO 36470 --- [ntLoopGroup-2-1] io.netty.handler.logging.LoggingHandler  : [id: 0x9aecb5a3] BIND: /0.0.0.0:1234
+    2019-10-28 19:14:08.304  INFO 36470 --- [ntLoopGroup-2-1] io.netty.handler.logging.LoggingHandler  : [id: 0x9aecb5a3, L:/0:0:0:0:0:0:0:0:1234] ACTIVE
+    2019-10-28 19:14:17.749  INFO 36470 --- [ntLoopGroup-2-1] io.netty.handler.logging.LoggingHandler  : [id: 0x9aecb5a3, L:/0:0:0:0:0:0:0:0:1234] READ: [id: 0xd336bfe6, L:/127.0.0.1:1234 - R:/127.0.0.1:54709]
+    2019-10-28 19:14:17.749  INFO 36470 --- [ntLoopGroup-2-1] io.netty.handler.logging.LoggingHandler  : [id: 0x9aecb5a3, L:/0:0:0:0:0:0:0:0:1234] READ COMPLETE
+    2019-10-28 19:14:17.755  INFO 36470 --- [ntLoopGroup-3-1] c.t.l.ServerRpcConnectionListener        : 服务端发送认证请求到：/127.0.0.1:54709
+    2019-10-28 19:14:17.926  INFO 36470 --- [sync-rpc-call-0] c.t.l.ServerRpcConnectionListener        : 链接认证成功：/127.0.0.1:54709
+    2019-10-28 19:14:17.927  INFO 36470 --- [sync-rpc-call-0] c.t.l.ServerRpcConnectionListener        : new client[/127.0.0.1:54709] connected, send broadcast to other clients
     ```
 - 客户端运行示例
     ```log 
-    2019-10-24 00:08:40.435  INFO 17517 --- [           main] com.tony.NettyClientApplication          : Started NettyClientApplication in 1.216 seconds (JVM running for 1.669)
-    2019-10-24 00:08:40.463  INFO 17517 --- [           main] c.t.i.NettyRpcClientInitializer          : Try connect socket[/127.0.0.1:1112] - count 1
-    2019-10-24 00:08:41.575  INFO 17517 --- [    auto-send-0] com.tony.runner.NettyClientRunner        : 客户端发送业务请求信息：「{"action":"sm","data":"Hello，now is 463006839854903","state":100}」
-    2019-10-24 00:08:43.145  INFO 17517 --- [    auto-send-0] com.tony.runner.NettyClientRunner        : 客户端请求逻辑中获取响应消息：「{"action":"sm","data":"服务端执行请求成功, for:463006839854903","state":200}」
-    2019-10-24 00:08:44.149  INFO 17517 --- [    auto-send-0] com.tony.runner.NettyClientRunner        : 客户端发送业务请求信息：「{"action":"sm","data":"Hello，now is 463009458775144","state":100}」
-    2019-10-24 00:08:45.655  INFO 17517 --- [    auto-send-0] com.tony.runner.NettyClientRunner        : 客户端请求逻辑中获取响应消息：「{"action":"sm","data":"服务端执行请求成功, for:463009458775144","state":200}」
-    2019-10-24 00:08:46.659  INFO 17517 --- [    auto-send-0] com.tony.runner.NettyClientRunner        : 客户端发送业务请求信息：「{"action":"sm","data":"Hello，now is 463011969131451","state":100}」
-    2019-10-24 00:08:48.169  INFO 17517 --- [    auto-send-0] com.tony.runner.NettyClientRunner        : 客户端请求逻辑中获取响应消息：「{"action":"sm","data":"服务端执行请求成功, for:463011969131451","state":200}」
+    2019-10-28 19:14:17.636  INFO 36475 --- [           main] com.tony.NettyClientApplication          : Started NettyClientApplication in 1.273 seconds (JVM running for 1.775)
+    2019-10-28 19:14:17.673  INFO 36475 --- [           main] c.t.i.NettyRpcClientInitializer          : Try connect socket[/127.0.0.1:1234] - count 1
+    2019-10-28 19:14:17.741  INFO 36475 --- [ntLoopGroup-2-1] c.t.l.impl.DefaultRpcConnectionListener  : connected to: /127.0.0.1:1234
+    2019-10-28 19:14:17.869  INFO 36475 --- [client-answer-0] c.t.a.ClientAnswerHandlerServiceImpl     : 客户端收到来自：「/127.0.0.1:1234」 的认证请求，将认证消息原路返回
+    2019-10-28 19:14:17.927  INFO 36475 --- [client-answer-1] c.t.a.ClientAnswerHandlerServiceImpl     : 客户端收到新建连接消息：【MessageDto(action=nc, state=200, data=Welcome to connect nettyStaging server! /127.0.0.1:54709)】
     ```

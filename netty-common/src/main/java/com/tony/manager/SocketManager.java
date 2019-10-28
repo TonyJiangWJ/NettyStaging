@@ -61,16 +61,13 @@ public class SocketManager {
         return future.isSuccess() ? EnumResponseState.success : EnumResponseState.fail;
     }
 
-    /**
-     * 向目标地址发送请求，并等待请求结果
-     *
-     * @param addressKey 目标地址
-     * @param rpcCmd     发送内容
-     * @param timeout    等待时间 单位秒
-     * @return
-     */
-    public MessageDto request(String addressKey, RpcCmd rpcCmd, long timeout) throws RpcException {
-        Channel channel = getChannel(addressKey);
+    public EnumResponseState send(Channel channel, RpcCmd rpcCmd) {
+        Future future = channel.writeAndFlush(rpcCmd).syncUninterruptibly();
+        return future.isSuccess() ? EnumResponseState.success : EnumResponseState.fail;
+    }
+
+
+    public MessageDto request(Channel channel, RpcCmd rpcCmd, long timeout) throws RpcException {
         channel.writeAndFlush(rpcCmd);
         log.debug("await response");
         if (timeout < 1) {
@@ -82,6 +79,19 @@ public class SocketManager {
         log.debug("response is:{}", res);
         rpcCmd.loadRpcContent().clear();
         return res;
+    }
+
+    /**
+     * 向目标地址发送请求，并等待请求结果
+     *
+     * @param addressKey 目标地址
+     * @param rpcCmd     发送内容
+     * @param timeout    等待时间 单位秒
+     * @return
+     */
+    public MessageDto request(String addressKey, RpcCmd rpcCmd, long timeout) throws RpcException {
+        Channel channel = getChannel(addressKey);
+        return request(channel, rpcCmd, timeout);
     }
 
     public MessageDto request(String addressKey, RpcCmd rpcCmd) throws RpcException {

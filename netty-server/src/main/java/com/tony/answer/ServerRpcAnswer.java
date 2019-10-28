@@ -39,14 +39,18 @@ public class ServerRpcAnswer implements RpcAnswer, DisposableBean {
     @Override
     public void callback(RpcCmd rpcCmd) {
         executorService.submit(() -> {
-
-            int state = rpcCmd.getMessage().getState();
-            if (EnumNettyState.REQUEST.getState() == state) {
-                log.info("服务端收到客户端请求：「{}」", rpcCmd.getMessage());
-                answerHandlerService.handleCmdRequest(rpcCmd);
-            } else {
-                // 响应类信息，不作处理
-                log.info("服务端收到客户端响应信息：「{}」", rpcCmd.getMessage());
+            try {
+                int state = rpcCmd.getMessage().getState();
+                if (EnumNettyState.REQUEST.getState() == state) {
+                    log.debug("服务端收到客户端请求：「{}」", rpcCmd.getMessage());
+                    answerHandlerService.handleCmdRequest(rpcCmd);
+                } else {
+                    // 响应类信息，不作处理
+                    log.debug("服务端收到客户端响应信息：「{}」", rpcCmd.getMessage());
+                    answerHandlerService.handleCmdResponse(rpcCmd);
+                }
+            } catch (Exception e) {
+                log.error("ServerAnswer执行异常", e);
             }
         });
     }
@@ -55,5 +59,6 @@ public class ServerRpcAnswer implements RpcAnswer, DisposableBean {
     @Override
     public void destroy() throws Exception {
         executorService.shutdown();
+        executorService.awaitTermination(6, TimeUnit.SECONDS);
     }
 }

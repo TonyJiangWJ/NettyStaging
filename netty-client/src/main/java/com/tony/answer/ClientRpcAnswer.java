@@ -42,15 +42,18 @@ public class ClientRpcAnswer implements RpcAnswer, DisposableBean {
     @Override
     public void callback(RpcCmd rpcCmd) {
         executorService.submit(() -> {
-            int state = rpcCmd.getMessage().getState();
-            if (EnumNettyState.REQUEST.getState() == state) {
-                log.info("客户端获取请求信息：「{}」", rpcCmd.getMessage());
-                answerHandlerService.handleCmdRequest(rpcCmd);
-            } else {
-                // 非请求类的可以不作处理
-                answerHandlerService.handleCmdResponse(rpcCmd);
+            try {
+                int state = rpcCmd.getMessage().getState();
+                if (EnumNettyState.REQUEST.getState() == state) {
+                    log.debug("客户端获取请求信息：「{}」", rpcCmd.getMessage());
+                    answerHandlerService.handleCmdRequest(rpcCmd);
+                } else {
+                    // 非请求类的可以不作处理
+                    answerHandlerService.handleCmdResponse(rpcCmd);
+                }
+            } catch (Exception e) {
+                log.error("ClientAnswer执行异常", e);
             }
-
         });
     }
 

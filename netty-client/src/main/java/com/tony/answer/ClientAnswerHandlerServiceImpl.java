@@ -28,18 +28,39 @@ public class ClientAnswerHandlerServiceImpl implements AnswerHandlerService {
         String action = rpcCmd.getMessage().getAction();
         // 如果有key则需要响应请求
         if (!StringUtils.isEmpty(rpcCmd.getRandomKey())) {
-            if (EnumNettyActions.P2P.getActionKey().equals(action)) {
-                Point2PointMessage point2PointMessage = rpcCmd.getMessage().dataOfClazz(Point2PointMessage.class);
-                log.info("客户端收到来自：「{}」的点对点消息:{}", point2PointMessage.getTargetAddressKey(), point2PointMessage.getMessage());
-            } else {
-                // 执行业务操作，更新message
-                // ....
-                MessageDto message = new MessageDto();
-                message.setAction(action);
-                message.setData("客户端执行请求成功");
-                message.setState(EnumNettyState.RESPONSE_OK.getState());
-                rpcCmd.setMessage(message);
-                rpcClient.send(rpcCmd);
+            EnumNettyActions nettyAction = EnumNettyActions.getActionByKey(action);
+            switch (nettyAction) {
+                case P2P:
+                    Point2PointMessage point2PointMessage = rpcCmd.getMessage().dataOfClazz(Point2PointMessage.class);
+                    log.info("客户端收到来自：「{}」的点对点消息:{}", point2PointMessage.getTargetAddressKey(), point2PointMessage.getMessage());
+                    break;
+                case BROADCAST:
+                    MessageDto messageDto = new MessageDto();
+                    messageDto.setData("ok, i know");
+                    messageDto.setState(EnumNettyState.RESPONSE_OK.getState());
+                    messageDto.setAction(BROADCAST.getActionKey());
+                    rpcCmd.setMessage(messageDto);
+                    log.info("客户端响应广播消息：" + rpcCmd.getMessage());
+                    rpcClient.send(rpcCmd);
+                    break;
+                case AUTHORIZE:
+                    log.info("客户端收到来自：「{}」 的认证请求，将认证消息原路返回", rpcCmd.getRemoteAddressKey());
+                    // 此处可以加入其他认证方式
+                    RpcCmd responseCmd = new RpcCmd();
+                    responseCmd.setMessage(rpcCmd.getMessage());
+                    responseCmd.setRemoteAddressKey(rpcCmd.getRemoteAddressKey());
+                    responseCmd.setRandomKey(rpcCmd.getRandomKey());
+                    rpcClient.send(responseCmd);
+                    break;
+                default:
+                    // 执行业务操作，更新message
+                    // ....
+                    MessageDto message = new MessageDto();
+                    message.setAction(action);
+                    message.setData("客户端执行请求成功");
+                    message.setState(EnumNettyState.RESPONSE_OK.getState());
+                    rpcCmd.setMessage(message);
+                    rpcClient.send(rpcCmd);
             }
         }
     }

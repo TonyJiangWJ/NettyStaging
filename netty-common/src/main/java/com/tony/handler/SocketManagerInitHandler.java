@@ -12,7 +12,11 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.net.InetSocketAddress;
+import java.util.Set;
 
 /**
  * @author jiangwenjie 2019/10/22
@@ -22,6 +26,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class SocketManagerInitHandler extends ChannelInboundHandlerAdapter {
     private RpcCmd heartCmd;
+
+    @Value("${netty.blocked:''}")
+    private Set<String> blockedIps;
 
     @Autowired
     private RpcConnectionListener rpcConnectionListener;
@@ -43,8 +50,14 @@ public class SocketManagerInitHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
-        rpcConnectionListener.connect(ctx.channel().remoteAddress().toString());
-        SocketManager.getInstance().addChannel(ctx.channel());
+        InetSocketAddress inetSocketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
+        if (blockedIps.size() > 0 && inetSocketAddress != null) {
+            if (blockedIps.contains(inetSocketAddress.getHostString())) {
+                ctx.close();
+                return;
+            }
+        }
+        rpcConnectionListener.authorizeConnection(ctx);
     }
 
     /**
@@ -56,8 +69,9 @@ public class SocketManagerInitHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
-        String remoteKey = ctx.channel().remoteAddress().toString();
-        rpcConnectionListener.disconnect(remoteKey);
+        if (!SocketManager.getInstance().noChannel(ctx.channel().remoteAddress())) {
+            rpcConnectionListener.disconnect(ctx);
+        }
         SocketManager.getInstance().removeChannel(ctx.channel());
     }
 

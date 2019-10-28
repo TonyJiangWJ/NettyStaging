@@ -12,6 +12,7 @@ public enum EnumNettyActions {
     HEART_CHECK("hc", "心跳检测"),
     BROADCAST("bc", "广播消息"),
     P2P("p2p", "点对点消息"),
+    AUTHORIZE("auth", "认证请求"),
     SIMPLE_ACTION("sm", "普通业务请求");
 
     private String actionKey;

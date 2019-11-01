@@ -2,9 +2,7 @@ package com.tony.handler;
 
 import com.alibaba.fastjson.JSON;
 import com.tony.constants.EnumNettyActions;
-import com.tony.constants.EnumNettyType;
 import com.tony.listener.HeartbeatListener;
-import com.tony.message.NettyContext;
 import com.tony.message.RpcCmd;
 import com.tony.message.RpcContent;
 import io.netty.channel.ChannelHandler;
@@ -32,7 +30,7 @@ public class RpcCmdDecoder extends MessageToMessageDecoder<RpcCmd> {
     protected void decode(ChannelHandlerContext ctx, RpcCmd msg, List<Object> out) throws Exception {
 
         if (msg.getMessage() != null && EnumNettyActions.HEART_CHECK.getActionKey().equals(msg.getMessage().getAction())) {
-            handlerHeartCheck(ctx, msg);
+            heartbeatListener.handleReceiveHeart(ctx, msg);
             return;
         }
 
@@ -55,16 +53,6 @@ public class RpcCmdDecoder extends MessageToMessageDecoder<RpcCmd> {
                 // 非request返回的消息，触发下一个handler
                 ctx.fireChannelRead(msg);
             }
-        }
-    }
-
-    private void handlerHeartCheck(ChannelHandlerContext ctx, RpcCmd msg) {
-        msg.setRemoteAddressKey(ctx.channel().remoteAddress().toString());
-        if (NettyContext.getInstance().getNettyType().equals(EnumNettyType.client)) {
-            heartbeatListener.onClientReceiveHeart(msg);
-            ctx.writeAndFlush(msg);
-        } else {
-            heartbeatListener.onServerReceiveHeart(msg);
         }
     }
 }

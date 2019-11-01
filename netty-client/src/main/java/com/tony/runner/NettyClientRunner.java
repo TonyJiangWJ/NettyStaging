@@ -48,8 +48,8 @@ public class NettyClientRunner implements ApplicationRunner, DisposableBean {
                 new ThreadFactoryBuilder().setNameFormat("auto-send-%d").build())
                 .submit(() -> {
                     Scanner scanner = new Scanner(System.in);
-                    while (scanner.hasNext()) {
-                        String readMessage = scanner.next();
+                    while (scanner.hasNextLine()) {
+                        String readMessage = scanner.nextLine();
                         RpcCmd rpcCmd = new RpcCmd();
                         rpcCmd.setRandomKey(rpcCmd.randomKey());
 

@@ -28,12 +28,6 @@ public class ServerAnswerHandlerServiceImpl implements AnswerHandlerService {
         String action = rpcCmd.getMessage().getAction();
         // 执行业务操作，更新message
         // ....
-//                try {
-//                    // 模拟服务器端业务逻辑延迟
-//                    Thread.sleep(1500);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
         // 如果有key则需要响应请求
         if (!StringUtils.isEmpty(rpcCmd.getRandomKey())) {
             if (EnumNettyActions.SIMPLE_ACTION.getActionKey().equals(action)) {

@@ -3,3 +3,6 @@ netty:
     host: 127.0.0.1
     port: 1112
     checkTime: 10000
+
+  proto:
+    type: stuff-protobuf

@@ -1,6 +1,5 @@
-package com.tony.message;
+package com.tony.simple;
 
-import com.tony.constants.EnumNettyProtoType;
 import com.tony.constants.EnumNettyState;
 import com.tony.serializer.impl.ProtobufSerializer;
 import lombok.Data;
@@ -32,22 +31,20 @@ public class MessageDto implements Serializable {
 
     private Serializable serialData;
 
-    private transient boolean isFromBuff;
 
-
-    public <T> T dataOfClazz(Class<T> clazz) {
-        if (EnumNettyProtoType.STUFF_PROTOBUF.getKey().equals(NettyContext.getInstance().getProtoType())) {
-            return bytesDataOfClass(clazz);
-        } else {
+    public <T> T dataOfClazz(Class<T> clazz, boolean isStuff) {
+        if (isStuff) {
             return serialDataOfClazz(clazz);
+        } else {
+            return bytesDataOfClass(clazz);
         }
     }
 
-    public <T extends Serializable> void setData(T object) {
-        if (EnumNettyProtoType.STUFF_PROTOBUF.getKey().equals(NettyContext.getInstance().getProtoType())) {
-            setBytesData(object);
-        } else {
+    public <T extends Serializable> void setData(T object, boolean isStuff) {
+        if (isStuff) {
             setSerialData(object);
+        } else {
+            setBytesData(object);
         }
     }
 
@@ -57,7 +54,7 @@ public class MessageDto implements Serializable {
             return null;
         }
         if (clazz.isInstance(serialData)) {
-            return (T) serialData;
+            return (T)serialData;
         } else {
             throw new IllegalArgumentException("data is not instance of class:" + clazz.getName());
         }

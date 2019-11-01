@@ -8,6 +8,7 @@ import com.tony.handler.RpcAnswerHandler;
 import com.tony.handler.RpcCmdDecoder;
 import com.tony.handler.RpcCmdEncoder;
 import com.tony.handler.SocketManagerInitHandler;
+import com.tony.serializer.ObjectSerializer;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
@@ -34,6 +35,8 @@ public class NettyClientChannelInitializer extends ChannelInitializer<Channel> {
     private SocketManagerInitHandler socketManagerInitHandler;
     @Autowired
     private ServerInfo serverInfo;
+    @Autowired
+    private ObjectSerializer objectSerializer;
 
     @Override
     protected void initChannel(Channel ch) throws Exception {
@@ -46,8 +49,8 @@ public class NettyClientChannelInitializer extends ChannelInitializer<Channel> {
                 // 设置自动间隔
                 .addLast(new IdleStateHandler(idleTime, idleTime, idleTime, TimeUnit.MILLISECONDS))
                 // 对象序列化和反序列化
-                .addLast(new ObjectSerializerEncoder())
-                .addLast(new ObjectSerializerDecoder())
+                .addLast(new ObjectSerializerEncoder(objectSerializer))
+                .addLast(new ObjectSerializerDecoder(objectSerializer))
                 .addLast(rpcCmdDecoder)
                 .addLast(new RpcCmdEncoder())
                 // 客户端重连检测

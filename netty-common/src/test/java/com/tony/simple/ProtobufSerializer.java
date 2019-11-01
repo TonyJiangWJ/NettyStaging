@@ -1,8 +1,6 @@
-package com.tony.serializer.impl;
-
-import com.tony.serializer.ObjectSerializer;
+package com.tony.simple;
 import io.protostuff.LinkedBuffer;
-import io.protostuff.ProtostuffIOUtil;
+import io.protostuff.ProtobufIOUtil;
 import io.protostuff.Schema;
 import io.protostuff.runtime.DefaultIdStrategy;
 import io.protostuff.runtime.RuntimeSchema;
@@ -17,34 +15,33 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * 基于Protostuff优化版的ProtostuffIOUtil实现序列化，适用于纯java交互
+ * 基于Protostuff优化版的ProtobufIOUtil实现序列化，理论上可以支持跨语言序列化
  *
- * @author jiangwenjie 2019/10/23
+ * @author jiangwenjie 2019/10/30
  */
-@SuppressWarnings("unchecked")
 @Slf4j
-public class ProtostuffSerializer implements ObjectSerializer {
+public class ProtobufSerializer {
+
 
     private final static Objenesis OBJENESIS = new ObjenesisStd(true);
 
-    private ProtostuffSerializer() {
+    private ProtobufSerializer() {
     }
 
     private static class SingletonHolder {
-        final static ProtostuffSerializer INSTANCE = new ProtostuffSerializer();
+        final static ProtobufSerializer INSTANCE = new ProtobufSerializer();
     }
 
-    public static ProtostuffSerializer getInstance() {
-        return SingletonHolder.INSTANCE;
+    public static ProtobufSerializer getInstance() {
+        return ProtobufSerializer.SingletonHolder.INSTANCE;
     }
 
-    @Override
     public void serialize(Object obj, OutputStream outputStream) {
         Class clz = obj.getClass();
         LinkedBuffer buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
         try {
             Schema schema = getSchema(clz);
-            ProtostuffIOUtil.writeTo(outputStream, obj, schema, buffer);
+            ProtobufIOUtil.writeTo(outputStream, obj, schema, buffer);
         } catch (IOException e) {
             log.error("序列化对象失败", e);
         } finally {
@@ -52,13 +49,12 @@ public class ProtostuffSerializer implements ObjectSerializer {
         }
     }
 
-    @Override
     public byte[] serialize(Object obj) {
         Class clz = obj.getClass();
         LinkedBuffer buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
         try (ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream()) {
             Schema schema = getSchema(clz);
-            ProtostuffIOUtil.writeTo(arrayOutputStream, obj, schema, buffer);
+            ProtobufIOUtil.writeTo(arrayOutputStream, obj, schema, buffer);
             return arrayOutputStream.toByteArray();
         } catch (IOException e) {
             log.error("序列化对象失败", e);
@@ -68,12 +64,11 @@ public class ProtostuffSerializer implements ObjectSerializer {
         return new byte[0];
     }
 
-    @Override
     public <T> T deSerialize(InputStream inputStream, Class<T> clazz) {
         T object = OBJENESIS.newInstance(clazz);
-        Schema schema = getSchema(clazz);
+        Schema<T> schema = getSchema(clazz);
         try {
-            ProtostuffIOUtil.mergeFrom(inputStream, object, schema);
+            ProtobufIOUtil.mergeFrom(inputStream, object, schema);
             return object;
         } catch (IOException e) {
             log.error("反序列化对象失败", e);
@@ -81,12 +76,11 @@ public class ProtostuffSerializer implements ObjectSerializer {
         return null;
     }
 
-    @Override
     public <T> T deSerialize(byte[] param, Class<T> clazz) {
         T object = OBJENESIS.newInstance(clazz);
-        Schema schema = getSchema(clazz);
+        Schema<T> schema = getSchema(clazz);
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(param)) {
-            ProtostuffIOUtil.mergeFrom(inputStream, object, schema);
+            ProtobufIOUtil.mergeFrom(inputStream, object, schema);
             return object;
         } catch (IOException e) {
             log.error("反序列化对象失败", e);
@@ -95,7 +89,8 @@ public class ProtostuffSerializer implements ObjectSerializer {
     }
 
 
-    private Schema getSchema(Class<?> clz) {
+    private <T> Schema<T> getSchema(Class<T> clz) {
         return RuntimeSchema.createFrom(clz, new DefaultIdStrategy());
     }
 }
+

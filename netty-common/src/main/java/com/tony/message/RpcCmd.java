@@ -16,7 +16,10 @@ import java.util.UUID;
 public class RpcCmd implements Serializable {
     private MessageDto message;
     private String randomKey;
-    private String remoteAddressKey;
+    /**
+     * 目标地址，不需要序列化传输
+     */
+    private transient String remoteAddressKey;
 
     /**
      * 消息持有对象，本地使用 需要标记为transient避免序列化传输

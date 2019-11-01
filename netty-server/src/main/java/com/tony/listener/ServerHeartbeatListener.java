@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.tony.constants.EnumNettyState;
 import com.tony.message.MessageDto;
 import com.tony.message.RpcCmd;
+import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +15,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ServerHeartbeatListener implements HeartbeatListener {
     @Override
-    public void onServerReceiveHeart(RpcCmd rpcCmd) {
+    public void handleReceiveHeart(ChannelHandlerContext ctx, RpcCmd rpcCmd) {
+        rpcCmd.setRemoteAddressKey(ctx.channel().remoteAddress().toString());
         MessageDto messageDto = rpcCmd.getMessage();
         if (messageDto.getState() == EnumNettyState.REQUEST.getState()) {
             log.debug("服务端收到心跳请求：「{}」", JSON.toJSONString(rpcCmd));

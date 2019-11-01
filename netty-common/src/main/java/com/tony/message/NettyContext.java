@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 public class NettyContext {
     private EnumNettyType nettyType;
+    private String protoType;
 
     private static class SingletonHolder {
         final static NettyContext INSTANCE = new NettyContext();

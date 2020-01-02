@@ -1,5 +1,6 @@
 package com.tony.listener;
 
+import com.tony.authorize.AuthorizeService;
 import com.tony.client.RpcClient;
 import com.tony.constants.EnumNettyActions;
 import com.tony.constants.EnumNettyState;
@@ -22,6 +23,8 @@ public class ServerRpcConnectionListener implements RpcConnectionListener {
 
     @Autowired
     private RpcClient rpcClient;
+    @Autowired
+    private AuthorizeService authorizeService;
 
     @Override
     public void connect(ChannelHandlerContext ctx) {
@@ -44,29 +47,20 @@ public class ServerRpcConnectionListener implements RpcConnectionListener {
         MessageDto messageDto = new MessageDto();
         messageDto.setState(EnumNettyState.REQUEST.getState());
         messageDto.setAction(EnumNettyActions.AUTHORIZE.getActionKey());
-        String randomData = new RpcCmd().emptyKey();
-        messageDto.setData(randomData);
+        messageDto.setData((String)authorizeService.generateAuthorizeData(ctx));
         log.info("服务端发送认证请求到：" + remoteKey);
         rpcClient.requestAsync(ctx.channel(), messageDto, (msg) -> {
-            try {
-                if (msg != null) {
-                    String resultStr = msg.dataOfClazz(String.class);
-                    if (randomData.equals(resultStr)) {
-                        log.info("链接认证成功：" + remoteKey);
-                        MessageDto greetMessage = new MessageDto();
-                        greetMessage.setAction(EnumNettyActions.NEW_CONNECT.getActionKey());
-                        greetMessage.setState(EnumNettyState.RESPONSE_OK.getState());
-                        greetMessage.setData("Welcome to connect nettyStaging server! " + remoteKey);
-                        rpcClient.send(ctx.channel(), greetMessage);
-                        this.connect(ctx);
-                        return null;
-                    }
-                }
-            } catch (Exception e) {
-                log.error("连接认证处理异常", e);
+            if (authorizeService.serverCheckAuthorize(messageDto, msg)) {
+                log.info("链接认证成功：" + remoteKey);
+                MessageDto greetMessage = new MessageDto();
+                greetMessage.setAction(EnumNettyActions.NEW_CONNECT.getActionKey());
+                greetMessage.setState(EnumNettyState.RESPONSE_OK.getState());
+                greetMessage.setData("Welcome to connect nettyStaging server! " + remoteKey);
+                rpcClient.send(ctx.channel(), greetMessage);
+                this.connect(ctx);
+            } else {
+                log.error("链接认证失败，记录异常连接ip：" + remoteKey);
             }
-            ctx.close();
-            log.error("链接认证失败，记录异常连接ip：" + remoteKey);
             return null;
         }, 5);
     }
@@ -83,7 +77,7 @@ public class ServerRpcConnectionListener implements RpcConnectionListener {
                     RpcCmd rpcCmd = new RpcCmd();
                     rpcCmd.setRemoteAddressKey(key);
                     rpcCmd.setMessage(messageDto);
-                    rpcCmd.setRandomKey(rpcCmd.emptyKey());
+                    rpcCmd.setRandomKey(RpcCmd.emptyKey());
                     rpcClient.send(rpcCmd);
                 });
     }

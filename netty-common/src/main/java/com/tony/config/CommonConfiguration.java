@@ -1,5 +1,7 @@
 package com.tony.config;
 
+import com.tony.authorize.AuthorizeService;
+import com.tony.authorize.impl.DefaultAuthorizeServiceImpl;
 import com.tony.constants.EnumNettyProtoType;
 import com.tony.listener.RpcConnectionListener;
 import com.tony.listener.impl.DefaultRpcConnectionListener;
@@ -24,7 +26,7 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 public class CommonConfiguration {
 
-    @Value("${netty.proto.type:stuff-protobuf}")
+    @Value("${netty.proto.type:protostuff}")
     private String protoType;
 
     @Bean
@@ -55,5 +57,11 @@ public class CommonConfiguration {
         NettyContext.getInstance().setProtoType(protoType);
         log.info("current prototype is: {}", protoType);
         return objectSerializer;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AuthorizeService authorizeService() {
+        return new DefaultAuthorizeServiceImpl();
     }
 }

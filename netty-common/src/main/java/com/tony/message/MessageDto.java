@@ -3,8 +3,11 @@ package com.tony.message;
 import com.tony.constants.EnumNettyProtoType;
 import com.tony.constants.EnumNettyState;
 import com.tony.serializer.impl.ProtobufSerializer;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 

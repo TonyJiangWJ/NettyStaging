@@ -9,3 +9,8 @@ logging:
   file: log/server.log
   level:
     com.tony: info
+
+rsa:
+  endable: true
+  key:
+    path: doc/

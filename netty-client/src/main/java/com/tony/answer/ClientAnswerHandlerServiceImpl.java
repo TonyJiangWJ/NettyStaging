@@ -1,5 +1,6 @@
 package com.tony.answer;
 
+import com.tony.authorize.AuthorizeService;
 import com.tony.client.RpcClient;
 import com.tony.constants.EnumNettyActions;
 import com.tony.constants.EnumNettyState;
@@ -21,6 +22,8 @@ import static com.tony.constants.EnumNettyActions.BROADCAST;
 public class ClientAnswerHandlerServiceImpl implements AnswerHandlerService {
     @Autowired
     private RpcClient rpcClient;
+    @Autowired
+    private AuthorizeService authorizeService;
 
     @Override
     public void handleCmdRequest(RpcCmd rpcCmd) {
@@ -44,13 +47,7 @@ public class ClientAnswerHandlerServiceImpl implements AnswerHandlerService {
                     rpcClient.send(rpcCmd);
                     break;
                 case AUTHORIZE:
-                    log.info("客户端收到来自：「{}」 的认证请求，将认证消息原路返回", rpcCmd.getRemoteAddressKey());
-                    // 此处可以加入其他认证方式
-                    RpcCmd responseCmd = new RpcCmd();
-                    responseCmd.setMessage(rpcCmd.getMessage());
-                    responseCmd.setRemoteAddressKey(rpcCmd.getRemoteAddressKey());
-                    responseCmd.setRandomKey(rpcCmd.getRandomKey());
-                    rpcClient.send(responseCmd);
+                    authorizeService.clientSendAuthorize(rpcCmd);
                     break;
                 default:
                     // 执行业务操作，更新message
@@ -83,7 +80,7 @@ public class ClientAnswerHandlerServiceImpl implements AnswerHandlerService {
                 messageDto.setData(point2PointMessage);
                 RpcCmd rpcCmd = new RpcCmd();
                 rpcCmd.setMessage(messageDto);
-                rpcCmd.setRandomKey(rpcCmd.emptyKey());
+                rpcCmd.setRandomKey(RpcCmd.emptyKey());
                 rpcCmd.setRemoteAddressKey(cmd.getRemoteAddressKey());
                 log.info("客户端发送hello信息到新客户端");
                 rpcClient.send(rpcCmd);

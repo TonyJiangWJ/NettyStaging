@@ -8,3 +8,9 @@ logging:
   file: log/client.log
   level:
     com.tony: info
+
+
+rsa:
+  enabled: true
+  public:
+    key: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCWP5quyXF73itsjeu2DBEam6jpb/r6sw2m8x6jKmz6I8wsytXAi9xVgrvj157RuSYWs4lN10XebuwWWT5JShYhJUib5kAdHokX6p2v7WE54mNo+l0KOdMHmhxp2G2W40NOkBkbNU20DUdL79FVTbUVYRx27s3FR3GEnLpQTA1H6QIDAQAB

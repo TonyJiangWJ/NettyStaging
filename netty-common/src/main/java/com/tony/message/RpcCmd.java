@@ -49,7 +49,7 @@ public class RpcCmd implements Serializable {
      *
      * @return
      */
-    public String emptyKey() {
+    public static String emptyKey() {
         return UUID.randomUUID().toString().replaceAll("-", "");
     }
 

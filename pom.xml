@@ -37,6 +37,8 @@
         <objenesis.version>2.2</objenesis.version>
         <guava.version>19.0</guava.version>
         <protobuff-java.version>3.10.0</protobuff-java.version>
+
+        <commons-codec.version>1.10</commons-codec.version>
     </properties>
 
     <dependencies>
@@ -139,6 +141,12 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang3.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

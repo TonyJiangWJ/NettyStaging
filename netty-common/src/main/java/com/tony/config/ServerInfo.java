@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ServerInfo {
-    private String host;
-    private int port;
-    private long checkTime;
+    private String host = "127.0.0.1";
+    private int port = 1110;
+    private long checkTime = 10000;
 }

@@ -36,7 +36,7 @@ public class SocketManager {
 
     public Channel getChannel(String addressKey) {
         return channels.stream()
-                .filter(channel -> addressKey.equals(channel.remoteAddress().toString()))
+                .filter(channel -> channel.remoteAddress() != null && addressKey.equals(channel.remoteAddress().toString()))
                 .findFirst()
                 .orElseThrow(() ->
                         new IllegalArgumentException("channel [" + addressKey + "] is not online")

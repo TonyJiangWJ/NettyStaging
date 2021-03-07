@@ -46,4 +46,16 @@ public class EncryptTest {
         Stream.of(Security.getProviders()).forEach(provider -> log.info("provide: {}, {}", provider.getName() , provider.getInfo()));
     }
 
+    @Test
+    public void testDecryptRsa() throws Exception {
+        String userDir = System.getProperty("user.dir");
+        log.info("userDir: {}", userDir);
+        String keyDirPath = userDir.substring(0, userDir.lastIndexOf("/")) + "/doc/";
+        log.info("key path: {}", keyDirPath);
+        RSAUtil rsaUtil = new RSAUtil(keyDirPath);
+        String originContent = "testContent测试内容123456かんが";
+        String encryptContent = rsaUtil.encryptWithPubKey(originContent);
+        log.info("encryptContent: {}", encryptContent);
+        log.info("result:{}", rsaUtil.decryptByPrivateKeyIgn(encryptContent));
+    }
 }

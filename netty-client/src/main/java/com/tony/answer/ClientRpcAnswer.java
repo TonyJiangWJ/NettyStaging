@@ -1,6 +1,7 @@
 package com.tony.answer;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.tony.answer.handler.ClientAnswerHandlerFactory;
 import com.tony.client.RpcClient;
 import com.tony.constants.EnumNettyState;
 import com.tony.message.RpcCmd;
@@ -22,14 +23,12 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class ClientRpcAnswer implements RpcAnswer, DisposableBean {
 
+    private final ClientAnswerHandlerFactory handlerFactory;
     private final ExecutorService executorService;
-    private final RpcClient rpcClient;
-    private final AnswerHandlerService answerHandlerService;
 
     @Autowired
-    public ClientRpcAnswer(RpcClient rpcClient, AnswerHandlerService answerHandlerService) {
-        this.rpcClient = rpcClient;
-        this.answerHandlerService = answerHandlerService;
+    public ClientRpcAnswer(ClientAnswerHandlerFactory handlerFactory) {
+        this.handlerFactory = handlerFactory;
         int threadsNum = Runtime.getRuntime().availableProcessors() * 5;
         this.executorService = new ThreadPoolExecutor(threadsNum, threadsNum,
                 0, TimeUnit.MILLISECONDS,
@@ -46,10 +45,10 @@ public class ClientRpcAnswer implements RpcAnswer, DisposableBean {
                 int state = rpcCmd.getMessage().getState();
                 if (EnumNettyState.REQUEST.getState() == state) {
                     log.debug("客户端获取请求信息：「{}」", rpcCmd.getMessage());
-                    answerHandlerService.handleCmdRequest(rpcCmd);
+                    handlerFactory.getHandler(rpcCmd).handleRequest();
                 } else {
                     // 非请求类的可以不作处理
-                    answerHandlerService.handleCmdResponse(rpcCmd);
+                    handlerFactory.getHandler(rpcCmd).handleResponse();
                 }
             } catch (Exception e) {
                 log.error("ClientAnswer执行异常", e);

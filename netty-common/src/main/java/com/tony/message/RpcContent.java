@@ -51,8 +51,8 @@ public class RpcContent implements Serializable {
      * @param timeout 等待超时时间
      */
     public void await(long timeout) {
+        lock.lock();
         try {
-            lock.lock();
             try {
                 if (timeout < 1) {
                     condition.await();
@@ -71,8 +71,8 @@ public class RpcContent implements Serializable {
      * 发送完成信号
      */
     public void signal() {
+        lock.lock();
         try {
-            lock.lock();
             condition.signal();
         } finally {
             lock.unlock();

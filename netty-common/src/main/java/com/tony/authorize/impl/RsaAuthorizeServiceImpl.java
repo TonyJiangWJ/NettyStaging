@@ -30,6 +30,9 @@ public class RsaAuthorizeServiceImpl implements AuthorizeService {
 
     @Override
     public boolean serverCheckAuthorize(MessageDto messageDto, MessageDto respMsg) {
+        if (respMsg == null) {
+            return false;
+        }
         String encryptedString = messageDto.dataOfClazz(String.class);
         log.debug("加密数据：{}", encryptedString);
         String decryptContent = rsaUtil.decryptByPublicKey(encryptedString);

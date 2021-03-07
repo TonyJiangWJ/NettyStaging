@@ -25,4 +25,13 @@ public enum EnumNettyProtoType {
     public String getDesc() {
         return desc;
     }
+
+    public static boolean contains(String key) {
+        for (EnumNettyProtoType protoType : values()) {
+            if (protoType.getKey().equals(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

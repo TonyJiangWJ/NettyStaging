@@ -40,7 +40,7 @@ public class ProtobufSerializer implements ObjectSerializer {
 
     @Override
     public void serialize(Object obj, OutputStream outputStream) {
-        Class clz = obj.getClass();
+        Class<?> clz = obj.getClass();
         LinkedBuffer buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
         try {
             Schema schema = getSchema(clz);
@@ -54,7 +54,7 @@ public class ProtobufSerializer implements ObjectSerializer {
 
     @Override
     public byte[] serialize(Object obj) {
-        Class clz = obj.getClass();
+        Class<?> clz = obj.getClass();
         LinkedBuffer buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
         try (ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream()) {
             Schema schema = getSchema(clz);

@@ -37,9 +37,10 @@ public class TestProtoDemo {
         p2pMsg.setTargetAddressKey("/127.0.0.1:12345");
 
         MessageDto messageDto = new MessageDto();
-        messageDto.setSerialData("string java");
+//        messageDto.setSerialData("string java");
         messageDto.setState(EnumNettyState.REQUEST.getState());
         messageDto.setAction(EnumNettyActions.P2P.getActionKey());
+        messageDto.setData("string java");
 
         RpcCmd rpcCmd = new RpcCmd();
         rpcCmd.setMessage(messageDto);
@@ -80,10 +81,13 @@ public class TestProtoDemo {
     @Test
     public void testSerializeAndDeserializeStuffBuff() throws Exception {
         File file = new File("stuff-buff-se.dat");
+        NettyContext.getInstance().setProtoType(EnumNettyProtoType.STUFF_PROTOBUF.getKey());
+        rpcCmd.getMessage().setData("java string stuff-protobuf");
         ProtobufSerializer.getInstance().serialize(rpcCmd, new FileOutputStream(file));
-        file = new File("stuff-buff-se-python.dat");
+//        file = new File("stuff-buff-se-python.dat");
         RpcCmd rpcCmd = ProtobufSerializer.getInstance().deSerialize(new FileInputStream(file), RpcCmd.class);
         log.info("after deserialize:\n{}", rpcCmd);
+        log.info("message:\n{}", rpcCmd.getMessage().dataOfClazz(String.class));
     }
 
 

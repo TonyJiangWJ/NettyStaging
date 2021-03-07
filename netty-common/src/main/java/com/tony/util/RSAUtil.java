@@ -2,7 +2,6 @@ package com.tony.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.security.Key;
 import java.security.interfaces.RSAKey;
@@ -23,7 +22,6 @@ public class RSAUtil {
     /**
      * 密文有效期30秒
      */
-    @Value("${rsa.valid.time:30000}")
     private long CIPHER_VALID_TIME = 30000;
 
     private final int TIMESTAMP_LENGTH = 13;
@@ -45,21 +43,46 @@ public class RSAUtil {
         publicKey = RSAEncrypt.loadPublicKeyByByteArray(Base64.decodeBase64(publicKeyBase64));
     }
 
+
+    /**
+     * 无视密文有效期
+     *
+     * @param cipher
+     * @return
+     */
+    public String decryptByPrivateKeyIgn(String cipher) {
+        return decrypt(cipher, privateKey, true);
+    }
+
+    /**
+     * 无视密文有效期
+     *
+     * @param cipher
+     * @return
+     */
+    public String decryptByPublicKeyIgn(String cipher) {
+        return decrypt(cipher, publicKey, true);
+    }
+
+
     public String decryptByPrivateKey(String cipher) {
-        return decrypt(cipher, privateKey);
+        return decrypt(cipher, privateKey, false);
     }
 
     public String decryptByPublicKey(String cipher) {
-        return decrypt(cipher, publicKey);
+        return decrypt(cipher, publicKey, false);
     }
 
-    public String decrypt(String cipher, Key rsaKey) {
+    public String decrypt(String cipher, Key rsaKey, boolean ignoreVerifyTime) {
         try {
             // 当base64编码串中包含空格，转换为加号
             cipher = cipher.replaceAll("[ ]", "+");
             byte[] cipherArray = RSAEncrypt.decrypt(rsaKey, Base64.decodeBase64(cipher));
             if (cipherArray != null) {
                 String cipherStr = new String(cipherArray, 0, cipherArray.length);
+                if (ignoreVerifyTime) {
+                    return cipherStr;
+                }
                 if (cipherStr.length() > TIMESTAMP_LENGTH) {
                     long timestamp = Long.parseLong(cipherStr.substring(0, TIMESTAMP_LENGTH));
                     if (System.currentTimeMillis() - timestamp < CIPHER_VALID_TIME) {
@@ -169,4 +192,7 @@ public class RSAUtil {
         return false;
     }
 
+    public void setValidTime(long validTime) {
+        CIPHER_VALID_TIME = validTime;
+    }
 }

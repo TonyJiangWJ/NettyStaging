@@ -12,6 +12,7 @@
         <module>netty-server</module>
         <module>netty-client</module>
         <module>netty-common</module>
+        <module>java-netty-client</module>
     </modules>
 
     <parent>

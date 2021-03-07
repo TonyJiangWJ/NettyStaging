@@ -1,6 +1,7 @@
 package com.tony.answer;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.tony.answer.handler.AnswerHandlerFactory;
 import com.tony.client.RpcClient;
 import com.tony.constants.EnumNettyState;
 import com.tony.message.RpcCmd;
@@ -21,14 +22,12 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class ServerRpcAnswer implements RpcAnswer, DisposableBean {
 
-    private final AnswerHandlerService answerHandlerService;
-    private final RpcClient rpcClient;
+    private final AnswerHandlerFactory handlerFactory;
     private final ExecutorService executorService;
 
     @Autowired
-    public ServerRpcAnswer(AnswerHandlerService answerHandlerService, RpcClient rpcClient) {
-        this.answerHandlerService = answerHandlerService;
-        this.rpcClient = rpcClient;
+    public ServerRpcAnswer(AnswerHandlerFactory handlerFactory) {
+        this.handlerFactory = handlerFactory;
         int threadNum = Runtime.getRuntime().availableProcessors() * 4;
         executorService = new ThreadPoolExecutor(threadNum, threadNum, 0, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<>(),
@@ -43,11 +42,12 @@ public class ServerRpcAnswer implements RpcAnswer, DisposableBean {
                 int state = rpcCmd.getMessage().getState();
                 if (EnumNettyState.REQUEST.getState() == state) {
                     log.debug("服务端收到客户端请求：「{}」", rpcCmd.getMessage());
-                    answerHandlerService.handleCmdRequest(rpcCmd);
+                    // 执行业务操作，更新message等等
+                    handlerFactory.getHandler(rpcCmd).handleRequest();
                 } else {
                     // 响应类信息，不作处理
                     log.debug("服务端收到客户端响应信息：「{}」", rpcCmd.getMessage());
-                    answerHandlerService.handleCmdResponse(rpcCmd);
+                    handlerFactory.getHandler(rpcCmd).handleResponse();
                 }
             } catch (Exception e) {
                 log.error("ServerAnswer执行异常", e);

@@ -1,9 +1,6 @@
 netty:
-  server:
-    host: 127.0.0.1
-    port: 1234
-    checkTime: 10000
-
+  proto:
+    type: pure-protobuf
 logging:
   file: log/client.log
   level:
@@ -11,6 +8,6 @@ logging:
 
 
 rsa:
-  enabled: true
-  public:
-    key: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCWP5quyXF73itsjeu2DBEam6jpb/r6sw2m8x6jKmz6I8wsytXAi9xVgrvj157RuSYWs4lN10XebuwWWT5JShYhJUib5kAdHokX6p2v7WE54mNo+l0KOdMHmhxp2G2W40NOkBkbNU20DUdL79FVTbUVYRx27s3FR3GEnLpQTA1H6QIDAQAB
+  enabled: false
+#  key-path: doc/ ## 指定秘钥所在文件夹或者直接指定秘钥文本
+  public-key: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCWP5quyXF73itsjeu2DBEam6jpb/r6sw2m8x6jKmz6I8wsytXAi9xVgrvj157RuSYWs4lN10XebuwWWT5JShYhJUib5kAdHokX6p2v7WE54mNo+l0KOdMHmhxp2G2W40NOkBkbNU20DUdL79FVTbUVYRx27s3FR3GEnLpQTA1H6QIDAQAB

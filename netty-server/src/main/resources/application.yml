@@ -1,9 +1,6 @@
 netty:
-  server:
-    host: 0.0.0.0
-    port: 1234
-    checkTime: 10000
-  blocked:
+  proto:
+    type: pure-protobuf
 
 logging:
   file: log/server.log
@@ -11,6 +8,5 @@ logging:
     com.tony: info
 
 rsa:
-  endable: true
-  key:
-    path: doc/
+  enabled: false
+  key-path: doc/

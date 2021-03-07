@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
+ * 纯Protobuff实现时的对象转换工具
  * @author jiangwenjie 2019/10/30
  */
 @Slf4j

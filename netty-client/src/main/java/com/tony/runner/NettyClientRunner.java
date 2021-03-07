@@ -62,7 +62,7 @@ public class NettyClientRunner implements ApplicationRunner, DisposableBean {
                         rpcCmd.setRemoteAddressKey(remoteKeys.get(0));
                         try {
                             MessageDto result = rpcClient.request(rpcCmd, 5);
-                            log.info("客户端请求逻辑中获取响应消息：「{}」", JSON.toJSONString(result));
+                            log.info("客户端请求逻辑中获取响应消息：「{}」", result.dataOfClazz(String.class));
                         } catch (Exception e) {
                             log.error("获取请求结果失败", e);
                         }

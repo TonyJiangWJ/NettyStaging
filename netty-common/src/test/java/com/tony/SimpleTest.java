@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * @author jiangwenjie 2019/10/22
@@ -29,6 +30,17 @@ import java.io.Serializable;
 @Slf4j
 public class SimpleTest {
 
+
+    @Test
+    public void test() {
+        log.info("{}", new BigDecimal("300000")
+                        .multiply(new BigDecimal("10"))
+                        .divide(new BigDecimal("30"), BigDecimal.ROUND_HALF_UP)
+                        .multiply(new BigDecimal("12"))
+                        .divide(new BigDecimal("100"), BigDecimal.ROUND_HALF_UP)
+                        .add(new BigDecimal("300000"))
+        );
+    }
 
     @Test
     public void testMessageDto() {

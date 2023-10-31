@@ -51,7 +51,7 @@ public class SocketManagerInitHandler extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         InetSocketAddress inetSocketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
-        if (blockedIps.size() > 0 && inetSocketAddress != null) {
+        if (!blockedIps.isEmpty() && inetSocketAddress != null) {
             if (blockedIps.contains(inetSocketAddress.getHostString())) {
                 ctx.close();
                 return;

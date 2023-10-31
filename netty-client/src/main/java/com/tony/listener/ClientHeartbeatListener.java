@@ -20,7 +20,8 @@ public class ClientHeartbeatListener implements HeartbeatListener {
         MessageDto messageDto = rpcCmd.getMessage();
         if (messageDto.getState() == EnumNettyState.REQUEST.getState()) {
             log.debug("客户端收到来自【{}】心跳请求，返回心跳信息", rpcCmd.getRemoteAddressKey());
-            rpcCmd.getMessage().setData("hello, im client");
+            // 心跳不需要传输任何信息，测试使用可以传递一些文本
+            // rpcCmd.getMessage().setData("hello, im client");
             rpcCmd.getMessage().setState(EnumNettyState.RESPONSE_OK.getState());
         } else {
             log.debug("客户端收到来自【{}】心跳响应：「{}」", rpcCmd.getRemoteAddressKey(), JSON.toJSONString(rpcCmd));

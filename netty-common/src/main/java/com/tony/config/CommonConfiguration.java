@@ -3,6 +3,7 @@ package com.tony.config;
 import com.tony.authorize.AuthorizeService;
 import com.tony.authorize.impl.DefaultAuthorizeServiceImpl;
 import com.tony.authorize.impl.RsaAuthorizeServiceImpl;
+import com.tony.client.RpcClient;
 import com.tony.constants.EnumNettyProtoType;
 import com.tony.listener.RpcConnectionListener;
 import com.tony.listener.impl.DefaultRpcConnectionListener;
@@ -12,11 +13,11 @@ import com.tony.serializer.SerializerFactory;
 import com.tony.util.RSAUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -65,14 +66,14 @@ public class CommonConfiguration {
 
     @Bean
     @ConditionalOnProperty(name = "rsa.enabled")
-    public AuthorizeService rsaAuthorizeService() {
-        return new RsaAuthorizeServiceImpl();
+    public AuthorizeService rsaAuthorizeService(@Autowired RpcClient rpcClient, @Autowired RSAUtil rsaUtil) {
+        return new RsaAuthorizeServiceImpl(rsaUtil, rpcClient);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public AuthorizeService authorizeService() {
-        return new DefaultAuthorizeServiceImpl();
+    public AuthorizeService authorizeService(@Autowired RpcClient rpcClient) {
+        return new DefaultAuthorizeServiceImpl(rpcClient);
     }
 
 

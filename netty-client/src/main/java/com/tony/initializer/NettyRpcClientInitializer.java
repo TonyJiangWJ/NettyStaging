@@ -6,9 +6,7 @@ import com.tony.constants.EnumNettyType;
 import com.tony.manager.SocketManager;
 import com.tony.message.NettyContext;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.EventExecutorGroup;
@@ -35,7 +33,7 @@ public class NettyRpcClientInitializer implements RpcClientInitializer {
 
 
     @Autowired
-    private ChannelInitializer channelInitializer;
+    private ChannelInitializer<Channel> channelInitializer;
 
     private EventLoopGroup workerGroup;
 
@@ -49,7 +47,7 @@ public class NettyRpcClientInitializer implements RpcClientInitializer {
         );
         workerGroup = new NioEventLoopGroup();
         // 当前设置仅仅连接一个服务端
-        Optional<Future> future = connect(new InetSocketAddress(serverInfo.getHost(), serverInfo.getPort()));
+        Optional<Future<Void>> future = connect(new InetSocketAddress(serverInfo.getHost(), serverInfo.getPort()));
         if (sync && future.isPresent()) {
             try {
                 future.get().get(10, TimeUnit.SECONDS);
@@ -60,7 +58,7 @@ public class NettyRpcClientInitializer implements RpcClientInitializer {
     }
 
     @Override
-    public Optional<Future> connect(SocketAddress socketAddress) {
+    public Optional<Future<Void>> connect(SocketAddress socketAddress) {
         int retry = 3;
         int count = 0;
         while (retry-- > 0) {

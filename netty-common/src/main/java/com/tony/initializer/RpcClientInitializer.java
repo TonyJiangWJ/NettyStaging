@@ -25,15 +25,6 @@ public interface RpcClientInitializer extends DisposableBean {
      * @param socketAddress
      * @return
      */
-    Optional<Future> connect(SocketAddress socketAddress);
+    Optional<Future<Void>> connect(SocketAddress socketAddress);
 
-    /**
-     * 重新建立连接
-     *
-     * @param socketAddress
-     * @return
-     */
-    default Optional<Future> reconnect(SocketAddress socketAddress) {
-        return connect(socketAddress);
-    }
 }

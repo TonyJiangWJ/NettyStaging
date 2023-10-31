@@ -1,7 +1,7 @@
 # NettyStaging 一套可以直接使用的Netty脚手架代码
 
 - 基于netty4实现的一套netty消息传递框架代码，可以接入业务代码实现其他需要长连接的功能
-- 运行框架采用SpringBoot 2.0.5
+- 运行框架采用SpringBoot 2.7.7
 - 整体思路参考自TX-LCN分布式事务框架中的netty实现
 - 消息序列化采用protostuff实现，仅支持java。跨语言建议使用protobuff
 - 实现消息发送，消息请求并等待响应结果，自动心跳检测等

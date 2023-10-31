@@ -18,10 +18,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Slf4j
 public class RsaAuthorizeServiceImpl implements AuthorizeService {
 
-    @Autowired
-    private RSAUtil rsaUtil;
-    @Autowired
-    private RpcClient rpcClient;
+
+    private final RSAUtil rsaUtil;
+
+    private final RpcClient rpcClient;
+
+    public RsaAuthorizeServiceImpl(RSAUtil rsaUtil, RpcClient rpcClient) {
+        this.rsaUtil = rsaUtil;
+        this.rpcClient = rpcClient;
+    }
 
     @Override
     public Object generateAuthorizeData(ChannelHandlerContext ctx) {

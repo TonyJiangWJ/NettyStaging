@@ -3,9 +3,10 @@ netty:
     type: pure-protobuf
 
 logging:
-  file: log/server.log
   level:
     com.tony: info
+  file:
+    name: log/server.log
 
 rsa:
   enabled: false

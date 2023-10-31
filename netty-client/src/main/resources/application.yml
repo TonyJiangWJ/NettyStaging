@@ -2,9 +2,10 @@ netty:
   proto:
     type: pure-protobuf
 logging:
-  file: log/client.log
   level:
     com.tony: info
+  file:
+    name: log/client.log
 
 
 rsa:

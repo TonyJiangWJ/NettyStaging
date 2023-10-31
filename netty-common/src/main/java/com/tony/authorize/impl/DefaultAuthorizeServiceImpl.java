@@ -13,8 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 @Slf4j
 public class DefaultAuthorizeServiceImpl implements AuthorizeService {
-    @Autowired
-    private RpcClient rpcClient;
+
+    private final RpcClient rpcClient;
+
+    public DefaultAuthorizeServiceImpl(RpcClient rpcClient) {
+        this.rpcClient = rpcClient;
+    }
 
     @Override
     public Object generateAuthorizeData(ChannelHandlerContext ctx) {

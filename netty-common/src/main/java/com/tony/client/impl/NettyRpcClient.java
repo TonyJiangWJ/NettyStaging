@@ -29,7 +29,6 @@ public class NettyRpcClient implements RpcClient {
 
     private final ExecutorService executorService;
 
-    @Autowired
     public NettyRpcClient() {
         int threadNum = Runtime.getRuntime().availableProcessors() * 5;
         this.executorService = new ThreadPoolExecutor(
